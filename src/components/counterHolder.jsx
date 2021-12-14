@@ -5,39 +5,67 @@ import Total from './total';
 class CounterHolder extends Component {
     
     state = {
-        counters: [
-            {id: 1, value: 0, elementName: "Lechuga", elementUnitaryPrice:"9.99"},
-            {id: 2, value: 2, elementName: "Sandia", elementUnitaryPrice:"4.99"},
-            {id: 3, value: 0, elementName: "Alita de Pollo", elementUnitaryPrice:"9.99"},
-            {id: 4, value: 9, elementName: "Muslo de Pollo", elementUnitaryPrice:"9.54"},
-        ]
+        counters: this.props.data,
+        precioTotal: this.getPrecio(this.props.data),
     };
 
     handleDelete = (key)=>{
-        const counters = this.state.counters.filter(c => c.id !== key);
+        var counters = this.state.counters.filter(c => c.id !== key.id);
         this.setState({counters});
+        var precioTotal = this.getPrecio(counters);
+        this.setState({precioTotal});
     }
+
+    handleIncrement = (key)=>{
+        const counters = [...this.state.counters];
+        var id = counters.indexOf(key);
+        counters[id].value++;
+        this.setState({counters});
+        var precioTotal = this.getPrecio(counters);
+        this.setState({precioTotal});
+    }
+
+    handleDecrement = (key)=>{
+        const counters = [...this.state.counters];
+        var id = counters.indexOf(key);
+        if(counters[id].value>0){
+            counters[id].value--;
+            this.setState({counters});
+        }
+        var precioTotal = this.getPrecio(counters);
+        this.setState({precioTotal});
+    }
+
+    handleResetValue = (key)=>{
+        const counters = [...this.state.counters];
+        var id = counters.indexOf(key);
+        counters[id].value = 0;
+        this.setState({counters});
+        var precioTotal = this.getPrecio(counters);
+        this.setState({precioTotal});
+    }
+
     
     render() { 
         return (<div>
                     <table>
                         <tbody>
-                            {this.state.counters.map(counter => <Counter key={counter.id} id={counter.id} onDelete={this.handleDelete} value={counter.value} elementName={counter.elementName} elementUnitaryPrice={counter.elementUnitaryPrice}/>)}
+                            {this.state.counters.map(counter => (<Counter key={counter.id} counter={counter} onDelete={this.handleDelete} onIncrement={this.handleIncrement} onDecrement={this.handleDecrement} onReset={this.handleResetValue} />))}
                         </tbody>
                     </table>
-                    <Total total={this.calcularPrecio()}/>
+                    <Total total={this.state.precioTotal}/>
                 </div>);
     }
 
-    calcularPrecio = () =>{
-        var counters = this.state.counters;
+    getPrecio(counters){
         var precioTotal = 0;
         for(var i = 0; i<counters.length; i++){
             var counter = counters[i];
             precioTotal+= counter.value * counter.elementUnitaryPrice;
         }
-        return +(Math.round(precioTotal + "e+2")  + "e-2");
+        return Math.round((precioTotal + Number.EPSILON) *100) / 100;
     }
+
 }
  
 export default CounterHolder;

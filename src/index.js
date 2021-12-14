@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
-import CounterHolder from './components/counterHolder'
+import Controller from './components/controller';
 
 ReactDOM.render(
-  <CounterHolder />,
+  <Controller />,
   document.getElementById('root')
 );
 
